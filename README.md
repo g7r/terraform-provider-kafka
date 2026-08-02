@@ -50,6 +50,8 @@ your [terraform plugin directory][third-party-plugins] (typically `~/.terraform.
     cd terraform-provider-kafka
     ```
 0. Build the provider `make build`
+0. Install the git hooks `pre-commit install`
+0. Lint `make lint`
 0. Run the tests `make test`
 0. Start a TLS enabled kafka-cluster `docker-compose up`
 0. Run the acceptance tests `make testacc`

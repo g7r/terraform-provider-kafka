@@ -1,0 +1,7 @@
+# Keep `rev` in sync with the golangci-lint version pinned in
+# .github/workflows/test.yml, so a local run matches CI.
+repos:
+  - repo: https://github.com/golangci/golangci-lint
+    rev: v2.12.2
+    hooks:
+      - id: golangci-lint-full

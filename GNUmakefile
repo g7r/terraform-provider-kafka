@@ -8,6 +8,9 @@ build:
 test:
 	 go test ./kafka -v $(TESTARGS)
 
+lint:
+	pre-commit run --all-files golangci-lint-full
+
 testacc:
 	GODEBUG=x509ignoreCN=0 \
 	KAFKA_BOOTSTRAP_SERVERS=$(KAFKA_BOOTSTRAP_SERVERS) \
@@ -19,4 +22,4 @@ testacc:
 	KAFKA_ENABLE_TLS=true \
 	TF_ACC=1 go test ./kafka -v $(TESTARGS) -timeout 9m -count=1
 
-.PHONY: build test testacc
+.PHONY: build test testacc lint

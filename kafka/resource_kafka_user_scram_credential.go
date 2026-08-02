@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"time"
 
 	"github.com/IBM/sarama"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/retry"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
@@ -267,6 +269,35 @@ func userScramCredentialDelete(ctx context.Context, d *schema.ResourceData, meta
 	if err != nil {
 		log.Println("[ERROR] Failed to delete user scram credential")
 		return diag.FromErr(err)
+	}
+
+	// SCRAM credentials propagate asynchronously, so the broker can still
+	// resolve the user right after the delete is acked.
+	return diag.FromErr(waitForUserScramCredentialGone(ctx, c, userScramCredential.Name, scram_mechanism_string))
+}
+
+func waitForUserScramCredentialGone(ctx context.Context, c *LazyClient, username, mechanism string) error {
+	stateConf := &retry.StateChangeConf{
+		Pending: []string{"Deleting"},
+		Target:  []string{"Gone"},
+		Refresh: func() (interface{}, string, error) {
+			_, err := c.DescribeUserScramCredential(username, mechanism)
+			if _, ok := err.(UserScramCredentialMissingError); ok {
+				return username, "Gone", nil
+			}
+			if err != nil {
+				return nil, "Error", err
+			}
+			return nil, "Deleting", nil
+		},
+		Timeout:      time.Duration(c.Config.Timeout) * time.Second,
+		Delay:        0,
+		PollInterval: 1 * time.Second,
+		MinTimeout:   1 * time.Second,
+	}
+
+	if _, err := stateConf.WaitForStateContext(ctx); err != nil {
+		return fmt.Errorf("error waiting for user scram credential (%s) to be deleted: %s", username, err)
 	}
 
 	return nil

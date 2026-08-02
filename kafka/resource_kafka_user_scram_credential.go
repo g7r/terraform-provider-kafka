@@ -197,7 +197,8 @@ func userScramCredentialCreate(ctx context.Context, d *schema.ResourceData, meta
 	}
 
 	d.SetId(userScramCredential.ID())
-	return nil
+
+	return diag.FromErr(waitForUserScramCredential(ctx, c, userScramCredential.Name, d.Get("scram_mechanism").(string), userScramCredentialVisible))
 }
 
 func userScramCredentialRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
@@ -271,24 +272,36 @@ func userScramCredentialDelete(ctx context.Context, d *schema.ResourceData, meta
 		return diag.FromErr(err)
 	}
 
-	// SCRAM credentials propagate asynchronously, so the broker can still
-	// resolve the user right after the delete is acked.
-	return diag.FromErr(waitForUserScramCredentialGone(ctx, c, userScramCredential.Name, scram_mechanism_string))
+	return diag.FromErr(waitForUserScramCredential(ctx, c, userScramCredential.Name, scram_mechanism_string, userScramCredentialGone))
 }
 
-func waitForUserScramCredentialGone(ctx context.Context, c *LazyClient, username, mechanism string) error {
+const (
+	userScramCredentialVisible = "Visible"
+	userScramCredentialGone    = "Gone"
+)
+
+// waitForUserScramCredential blocks until describing the credential reports the
+// target state. SCRAM credentials propagate asynchronously, so the broker can
+// still answer with the previous state right after an upsert or a delete is
+// acked.
+func waitForUserScramCredential(ctx context.Context, c *LazyClient, username, mechanism, target string) error {
+	pending := userScramCredentialVisible
+	if target == userScramCredentialVisible {
+		pending = userScramCredentialGone
+	}
+
 	stateConf := &retry.StateChangeConf{
-		Pending: []string{"Deleting"},
-		Target:  []string{"Gone"},
+		Pending: []string{pending},
+		Target:  []string{target},
 		Refresh: func() (interface{}, string, error) {
 			_, err := c.DescribeUserScramCredential(username, mechanism)
 			if _, ok := err.(UserScramCredentialMissingError); ok {
-				return username, "Gone", nil
+				return username, userScramCredentialGone, nil
 			}
 			if err != nil {
 				return nil, "Error", err
 			}
-			return nil, "Deleting", nil
+			return username, userScramCredentialVisible, nil
 		},
 		Timeout:      time.Duration(c.Config.Timeout) * time.Second,
 		Delay:        0,
@@ -297,7 +310,7 @@ func waitForUserScramCredentialGone(ctx context.Context, c *LazyClient, username
 	}
 
 	if _, err := stateConf.WaitForStateContext(ctx); err != nil {
-		return fmt.Errorf("error waiting for user scram credential (%s) to be deleted: %s", username, err)
+		return fmt.Errorf("error waiting for user scram credential (%s) to become %s: %s", username, strings.ToLower(target), err)
 	}
 
 	return nil

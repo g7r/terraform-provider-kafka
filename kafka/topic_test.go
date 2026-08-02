@@ -139,6 +139,34 @@ func TestConfigToResources_DoesNotMutateCallerMap(t *testing.T) {
 	}
 }
 
+// TestIsDefault checks that only an explicit topic-level override lands in state.
+// A per-broker dynamic config (SourceDynamicBroker) is reported by DescribeConfigs
+// for every topic through the config synonym chain, so keeping it produced a
+// perpetual diff on topics that never declared it.
+func TestIsDefault(t *testing.T) {
+	tests := []struct {
+		name   string
+		source sarama.ConfigSource
+		want   bool
+	}{
+		{"unknown", sarama.SourceUnknown, false},
+		{"topic", sarama.SourceTopic, false},
+		{"dynamic broker", sarama.SourceDynamicBroker, true},
+		{"dynamic default broker", sarama.SourceDynamicDefaultBroker, true},
+		{"static broker", sarama.SourceStaticBroker, true},
+		{"default", sarama.SourceDefault, true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			entry := &sarama.ConfigEntry{Name: "max.message.bytes", Value: "1048576", Source: tt.source}
+			if got := isDefault(entry, 2); got != tt.want {
+				t.Errorf("isDefault(%v) = %v, want %v", tt.source, got, tt.want)
+			}
+		})
+	}
+}
+
 // Helper function to create string pointers
 func stringPtr(s string) *string {
 	return &s

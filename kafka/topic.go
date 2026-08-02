@@ -73,8 +73,12 @@ func isDefault(tc *sarama.ConfigEntry, version int) bool {
 	if version == 0 {
 		return tc.Default
 	}
+	// Every source other than SourceTopic means the value is inherited from the
+	// broker, not an override on the topic. SourceUnknown is deliberately kept:
+	// brokers that do not populate config_source report everything as unknown.
 	return tc.Source == sarama.SourceDefault ||
 		tc.Source == sarama.SourceStaticBroker ||
+		tc.Source == sarama.SourceDynamicBroker ||
 		tc.Source == sarama.SourceDynamicDefaultBroker
 }
 

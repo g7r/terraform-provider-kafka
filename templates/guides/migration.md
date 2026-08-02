@@ -198,11 +198,11 @@ provider "kafka" {
 
 ## Handling Breaking Changes
 
-### Provider Version 0.10.2+ Empty Bootstrap Servers
+### Provider Version 0.2.0+ Empty Bootstrap Servers
 
 **Issue**: Provider crashes with nil pointer when `bootstrap_servers` is empty
 
-**Before (< 0.10.2)**:
+**Before (< 0.2.0)**:
 ```hcl
 # This worked but was not recommended
 provider "kafka" {
@@ -210,7 +210,7 @@ provider "kafka" {
 }
 ```
 
-**After (>= 0.10.2)**:
+**After (>= 0.2.0)**:
 ```hcl
 # Always provide valid brokers
 provider "kafka" {
@@ -229,14 +229,14 @@ resource "kafka_topic" "example" {
 
 **Issue**: Unsupported API version errors with Kafka 4.0.0
 
-**Solution**: Upgrade to provider version >= 0.8.0 which includes Kafka 4.0.0 support
+**Solution**: Upgrade to provider version >= 0.2.0 which includes Kafka 4.0.0 support
 
 ```hcl
 terraform {
   required_providers {
     kafka = {
       source  = "g7r/kafka"
-      version = "~> 0.8"  # Supports Kafka 4.0.0
+      version = "~> 0.2"  # Supports Kafka 4.0.0
     }
   }
 }

@@ -194,7 +194,7 @@ provider "kafka" {
 
 **Symptom:** Setting `resource_pattern_type_filter = "Prefixed"` results in `"Literal"` being used
 
-**Solution:** Ensure you're using a recent version of the provider (>= 0.8.0) which includes fixes for pattern type handling
+**Solution:** Ensure you're using a recent version of the provider (>= 0.2.0) which includes fixes for pattern type handling
 
 ## Connection and Timeout Issues
 

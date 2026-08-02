@@ -26,7 +26,7 @@ terraform {
   required_providers {
     kafka = {
       source  = "g7r/kafka"
-      version = "~> 0.7"
+      version = "~> 0.2"
     }
   }
 }

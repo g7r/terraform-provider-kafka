@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 
-	"github.com/Mongey/terraform-provider-kafka/kafka"
+	"github.com/g7r/terraform-provider-kafka/kafka"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/plugin"
 )
 

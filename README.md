@@ -1,5 +1,5 @@
 # `terraform-provider-kafka`
-[![CircleCI](https://circleci.com/gh/Mongey/terraform-provider-kafka.svg?style=svg)](https://circleci.com/gh/Mongey/terraform-provider-kafka)
+[![CircleCI](https://circleci.com/gh/g7r/terraform-provider-kafka.svg?style=svg)](https://circleci.com/gh/g7r/terraform-provider-kafka)
 
 A [Terraform][1] plugin for managing [Apache Kafka][2].
 
@@ -23,7 +23,7 @@ the below into your `main.tf` and execute `terraform init`
 terraform {
   required_providers {
     kafka = {
-      source = "Mongey/kafka"
+      source = "g7r/kafka"
     }
   }
 }
@@ -38,16 +38,16 @@ provider "kafka" {
 ```
 
 Otherwise, install by downloading and extracting the [latest
-release](https://github.com/Mongey/terraform-provider-kafka/releases/latest) to
+release](https://github.com/g7r/terraform-provider-kafka/releases/latest) to
 your [terraform plugin directory][third-party-plugins] (typically `~/.terraform.d/plugins/`)
 
 ### Developing
 
 0. [Install go][install-go]
-0. Clone repository to: `$GOPATH/src/github.com/Mongey/terraform-provider-kafka`
+0. Clone repository to: `$GOPATH/src/github.com/g7r/terraform-provider-kafka`
     ``` bash
-    mkdir -p $GOPATH/src/github.com/Mongey/terraform-provider-kafka; cd $GOPATH/src/github.com/Mongey/
-    git clone https://github.com/Mongey/terraform-provider-kafka.git
+    mkdir -p $GOPATH/src/github.com/g7r/terraform-provider-kafka; cd $GOPATH/src/github.com/g7r/
+    git clone https://github.com/g7r/terraform-provider-kafka.git
     cd terraform-provider-kafka
     ```
 0. Build the provider `make build`

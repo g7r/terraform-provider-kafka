@@ -25,7 +25,7 @@ The Kafka provider is used to interact with [Apache Kafka](https://kafka.apache.
 terraform {
   required_providers {
     kafka = {
-      source  = "Mongey/kafka"
+      source  = "g7r/kafka"
       version = "~> 0.7"
     }
   }

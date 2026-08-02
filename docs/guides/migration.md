@@ -2,18 +2,17 @@
 page_title: "Migration Guide"
 subcategory: ""
 description: |-
-  Guide for migrating between different Kafka setups and provider versions.
+  Guide for migrating between different Kafka setups.
 ---
 
 # Migration Guide
 
-This guide helps you migrate between different Kafka configurations, authentication methods, and handle breaking changes between provider versions.
+This guide helps you migrate between different Kafka configurations and authentication methods.
 
 ## Table of Contents
 
 - [Migrating to Dynamic Bootstrap Servers](#migrating-to-dynamic-bootstrap-servers)
 - [Migrating Authentication Methods](#migrating-authentication-methods)
-- [Handling Breaking Changes](#handling-breaking-changes)
 - [MSK Migration Scenarios](#msk-migration-scenarios)
 
 ## Migrating to Dynamic Bootstrap Servers
@@ -193,52 +192,6 @@ provider "kafka" {
   sasl_username    = "kafka-client"
   sasl_password    = var.new_password
   # Remove client_cert and client_key
-}
-```
-
-## Handling Breaking Changes
-
-### Provider Version 0.2.0+ Empty Bootstrap Servers
-
-**Issue**: Provider crashes with nil pointer when `bootstrap_servers` is empty
-
-**Before (< 0.2.0)**:
-```hcl
-# This worked but was not recommended
-provider "kafka" {
-  bootstrap_servers = local.kafka_enabled ? var.brokers : []
-}
-```
-
-**After (>= 0.2.0)**:
-```hcl
-# Always provide valid brokers
-provider "kafka" {
-  bootstrap_servers = var.brokers
-}
-
-# Use count on resources instead
-resource "kafka_topic" "example" {
-  count = local.kafka_enabled ? 1 : 0
-  name  = "my-topic"
-  # ... configuration
-}
-```
-
-### Kafka 4.0.0 Compatibility
-
-**Issue**: Unsupported API version errors with Kafka 4.0.0
-
-**Solution**: Upgrade to provider version >= 0.2.0 which includes Kafka 4.0.0 support
-
-```hcl
-terraform {
-  required_providers {
-    kafka = {
-      source  = "g7r/kafka"
-      version = "~> 0.2"  # Supports Kafka 4.0.0
-    }
-  }
 }
 ```
 

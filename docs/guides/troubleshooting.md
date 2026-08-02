@@ -178,7 +178,7 @@ provider "kafka" {
 
 **Symptom:** Topic name `msghub.callback.mpm` becomes `msghub_callback_mpm`
 
-**Status:** This is a known issue (#452) under investigation
+**Status:** This is a known upstream issue ([Mongey/terraform-provider-kafka#452](https://github.com/Mongey/terraform-provider-kafka/issues/452)) under investigation
 
 **Workaround:** Use underscores or hyphens instead of dots in topic names
 
@@ -189,12 +189,6 @@ provider "kafka" {
 **Cause:** MSK Serverless has limitations on which configurations can be modified after creation
 
 **Solution:** For MSK Serverless, certain properties like `cleanup.policy` must be set correctly at creation time and cannot be changed. Plan your topic configuration carefully before creation.
-
-### Resource Pattern Type Filter Ignored
-
-**Symptom:** Setting `resource_pattern_type_filter = "Prefixed"` results in `"Literal"` being used
-
-**Solution:** Ensure you're using a recent version of the provider (>= 0.2.0) which includes fixes for pattern type handling
 
 ## Connection and Timeout Issues
 

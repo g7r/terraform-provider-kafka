@@ -1,5 +1,4 @@
 # `terraform-provider-kafka`
-[![CircleCI](https://circleci.com/gh/g7r/terraform-provider-kafka.svg?style=svg)](https://circleci.com/gh/g7r/terraform-provider-kafka)
 
 A [Terraform][1] plugin for managing [Apache Kafka][2].
 
